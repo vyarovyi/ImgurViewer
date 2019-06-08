@@ -17,7 +17,7 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
-class CustomJsonDeserializer implements JsonDeserializer {
+public class CustomJsonDeserializer implements JsonDeserializer {
     @Override
     public FeedResponse deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
         FeedResponse response = null;
