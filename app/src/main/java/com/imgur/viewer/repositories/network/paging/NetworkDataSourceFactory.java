@@ -8,22 +8,22 @@ import com.imgur.viewer.repositories.database.model.FeedItem;
 import io.reactivex.subjects.ReplaySubject;
 
 public class NetworkDataSourceFactory extends DataSource.Factory {
-    private MutableLiveData<NetworkPageKeyedDataSource> networkStatus;
+    private MutableLiveData<NetworkPageKeyedDataSource> networkState;
     private NetworkPageKeyedDataSource networkDataSource;
     public NetworkDataSourceFactory() {
-        this.networkStatus = new MutableLiveData<>();
+        this.networkState = new MutableLiveData<>();
         networkDataSource = new NetworkPageKeyedDataSource();
     }
 
 
     @Override
     public DataSource create() {
-        networkStatus.postValue(networkDataSource);
+        networkState.postValue(networkDataSource);
         return networkDataSource;
     }
 
-    public MutableLiveData<NetworkPageKeyedDataSource> getNetworkStatus() {
-        return networkStatus;
+    public MutableLiveData<NetworkPageKeyedDataSource> getNetworkState() {
+        return networkState;
     }
 
     public ReplaySubject<FeedItem> getItems() {

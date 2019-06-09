@@ -66,7 +66,6 @@ public class FeedPageListAdapter extends PagedListAdapter<FeedItem, RecyclerView
         }
     }
 
-    //TODO: add new type if list is empty
     @Override
     public int getItemViewType(int position) {
         if (hasExtraRow() && position == getItemCount() - 1) {

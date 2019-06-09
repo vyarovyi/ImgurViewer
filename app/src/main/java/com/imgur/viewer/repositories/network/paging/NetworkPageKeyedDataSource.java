@@ -6,7 +6,6 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.paging.PageKeyedDataSource;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.FutureTarget;
 import com.imgur.viewer.ImgurApplication;
 import com.imgur.viewer.repositories.database.model.FeedItem;
 import com.imgur.viewer.repositories.database.model.NetworkState;
@@ -14,7 +13,6 @@ import com.imgur.viewer.repositories.network.api.NetworkInterface;
 import com.imgur.viewer.repositories.network.api.NetworkService;
 import com.imgur.viewer.repositories.network.models.FeedResponse;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -25,7 +23,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-//TODO: require refactoring: remove duplicates in code
+//TODO: require refactoring: remove duplicates in code, create abstract base class
 public class NetworkPageKeyedDataSource extends PageKeyedDataSource<Integer, FeedItem> {
 
     private final NetworkInterface networkClient;
@@ -48,7 +46,7 @@ public class NetworkPageKeyedDataSource extends PageKeyedDataSource<Integer, Fee
 
     @Override
     public void loadInitial(@NonNull LoadInitialParams<Integer> params, @NonNull final LoadInitialCallback<Integer, FeedItem> callback) {
-        networkState.postValue(NetworkState.LOADING);
+        networkState.postValue(NetworkState.INITIALIZING);
         Call<FeedResponse> callBack = networkClient.getFeed(0);
         callBack.enqueue(new Callback<FeedResponse>() {
             @Override

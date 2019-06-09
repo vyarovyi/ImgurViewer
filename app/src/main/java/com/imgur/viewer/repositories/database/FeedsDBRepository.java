@@ -1,7 +1,9 @@
 package com.imgur.viewer.repositories.database;
 
+import androidx.arch.core.util.Function;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MediatorLiveData;
+import androidx.lifecycle.Transformations;
 import androidx.paging.PagedList;
 
 import com.imgur.viewer.ImgurApplication;
@@ -9,6 +11,7 @@ import com.imgur.viewer.repositories.database.model.FeedItem;
 import com.imgur.viewer.repositories.database.model.NetworkState;
 import com.imgur.viewer.repositories.network.FeedsNetworkRepository;
 import com.imgur.viewer.repositories.network.paging.NetworkDataSourceFactory;
+import com.imgur.viewer.repositories.network.paging.NetworkPageKeyedDataSource;
 
 import io.reactivex.schedulers.Schedulers;
 
@@ -25,7 +28,9 @@ public class FeedsDBRepository {
 
     final private FeedsNetworkRepository network;
     final private FeedsDatabase database;
-    final private MediatorLiveData liveDataMerger;
+
+    final private MediatorLiveData itemsMerger;
+    final private MediatorLiveData networkMerger;
 
     private FeedsDBRepository() {
 
@@ -33,8 +38,14 @@ public class FeedsDBRepository {
 
         network = new FeedsNetworkRepository(dataSourceFactory, boundaryCallback);
         database = FeedsDatabase.getInstance(ImgurApplication.getInstance());
-        liveDataMerger = new MediatorLiveData<>();
-        liveDataMerger.addSource(network.getItems(), liveDataMerger::setValue);
+
+        itemsMerger = new MediatorLiveData<>();
+        itemsMerger.addSource(network.getItems(), itemsMerger::setValue);
+
+        networkMerger = new MediatorLiveData<>();
+        networkMerger.addSource(network.getNetworkState(), networkMerger::setValue);
+        networkMerger.addSource(database.getNetworkState(), networkMerger::setValue);
+
 
         dataSourceFactory.getItems().
                 observeOn(Schedulers.io()).
@@ -46,18 +57,18 @@ public class FeedsDBRepository {
         @Override
         public void onZeroItemsLoaded() {
             super.onZeroItemsLoaded();
-            liveDataMerger.addSource(database.getItems(), value -> {
-                liveDataMerger.setValue(value);
-                liveDataMerger.removeSource(database.getItems());
+            itemsMerger.addSource(database.getItems(), value -> {
+                itemsMerger.setValue(value);
+                itemsMerger.removeSource(database.getItems());
             });
         }
     };
 
     public LiveData<PagedList<FeedItem>> getItems() {
-        return liveDataMerger;
+        return itemsMerger;
     }
 
     public LiveData<NetworkState> getNetworkState() {
-        return network.getNetworkState();
+        return networkMerger;
     }
 }

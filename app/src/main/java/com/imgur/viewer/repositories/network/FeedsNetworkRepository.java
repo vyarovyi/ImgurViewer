@@ -22,11 +22,14 @@ public class FeedsNetworkRepository {
     final private LiveData<NetworkState> networkState;
 
     public FeedsNetworkRepository(NetworkDataSourceFactory dataSourceFactory, PagedList.BoundaryCallback<FeedItem> boundaryCallback) {
-        PagedList.Config pagedListConfig = (new PagedList.Config.Builder()).setEnablePlaceholders(false)
-                .setInitialLoadSizeHint(PAGE_SIZE * 2).setPageSize(PAGE_SIZE).build();
-        networkState = Transformations.switchMap(dataSourceFactory.getNetworkStatus(),
+
+        networkState = Transformations.switchMap(dataSourceFactory.getNetworkState(),
                 (Function<NetworkPageKeyedDataSource, LiveData<NetworkState>>)
                         NetworkPageKeyedDataSource::getNetworkState);
+
+        PagedList.Config pagedListConfig = (new PagedList.Config.Builder())
+                .setEnablePlaceholders(false)
+                .setInitialLoadSizeHint(PAGE_SIZE * 2).setPageSize(PAGE_SIZE).build();
         Executor executor = Executors.newFixedThreadPool(2);
         LivePagedListBuilder livePagedListBuilder = new LivePagedListBuilder(dataSourceFactory, pagedListConfig);
         feedLiveData = livePagedListBuilder.

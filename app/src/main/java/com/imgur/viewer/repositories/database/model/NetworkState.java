@@ -6,6 +6,7 @@ public class NetworkState {
         INITIALIZING,
         RUNNING,
         SUCCESS,
+        EMPTY,
         FAILED
     }
     private final Status status;
@@ -13,6 +14,8 @@ public class NetworkState {
 
     public static final NetworkState LOADED;
     public static final NetworkState LOADING;
+    public static final NetworkState INITIALIZING;
+    public static final NetworkState EMPTY;
 
     public NetworkState(Status status, String msg) {
         this.status = status;
@@ -20,8 +23,10 @@ public class NetworkState {
     }
 
     static {
+        INITIALIZING = new NetworkState(Status.INITIALIZING, "Initializing");
         LOADED = new NetworkState(Status.SUCCESS,"Success");
         LOADING = new NetworkState(Status.RUNNING,"Running");
+        EMPTY = new NetworkState(Status.EMPTY, "No data");
     }
 
     public Status getStatus() {
